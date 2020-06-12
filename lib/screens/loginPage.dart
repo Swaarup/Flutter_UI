@@ -60,14 +60,16 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       body: Center(
         child: Column(
           children: <Widget>[
-            AppearAnimation(
-              child: CircleAvatar(
-                radius: 50,
-                child: FlutterLogo(
-                  size: 50,
-                ),
-              ),
-            ),
+            Padding(
+                padding: EdgeInsets.only(top: 5.0),
+                child: AppearAnimation(
+                  child: CircleAvatar(
+                    radius: 50,
+                    child: FlutterLogo(
+                      size: 50,
+                    ),
+                  ),
+                )),
             SizedBox(
               height: 50.0,
             ),
@@ -75,8 +77,20 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
               child: Text("Welcome to UI Designs Test", style: headings),
               delay: delayTime,
             ),
+            AppearAnimation(
+              child: Padding(
+                padding: EdgeInsets.only(top: 15.0, left: 55, right: 55),
+                child: Text(
+                    "This is a simple application to check "
+                    "the layouts and the animations provided by Flutter"
+                    " and Dart",
+                    textAlign: TextAlign.center,
+                    style: subheadings),
+              ),
+              delay: delayTime + 500,
+            ),
             SizedBox(
-              height: 50.0,
+              height: 40.0,
             ),
             AppearAnimation(
               child: Container(
@@ -92,7 +106,7 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                   ),
                 ),
               ),
-              delay: delayTime + 400,
+              delay: delayTime + 900,
             ),
             SizedBox(
               height: 30.0,
@@ -124,14 +138,14 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                           ));
                 },
               ),
-              delay: delayTime + 600,
+              delay: delayTime + 1200,
             ),
             SizedBox(
               height: 30.0,
             ),
             AppearAnimation(
               child: Text("Designed By Swarup", style: subheadings),
-              delay: delayTime + 800,
+              delay: delayTime + 1600,
             ),
           ],
         ),
