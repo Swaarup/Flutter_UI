@@ -5,6 +5,7 @@ import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:uitask/helpers/AppearAnimation.dart';
+import 'package:uitask/screens/listDetails.dart';
 
 class LoginPage extends StatefulWidget {
   String title;
@@ -93,19 +94,23 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
               height: 40.0,
             ),
             AppearAnimation(
-              child: Container(
-                height: 50,
-                width: 250,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100.0),
-                    color: primaryColor),
-                child: Center(
-                  child: Text(
-                    'Proceed',
-                    style: buttons,
-                  ),
-                ),
-              ),
+              child: GestureDetector(
+                  onTap: () {
+                    navigateToDetail();
+                  },
+                  child: Container(
+                    height: 50,
+                    width: 250,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100.0),
+                        color: primaryColor),
+                    child: Center(
+                      child: Text(
+                        'Proceed',
+                        style: buttons,
+                      ),
+                    ),
+                  )),
               delay: delayTime + 900,
             ),
             SizedBox(
@@ -157,5 +162,11 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   void dispose() {
     animationController.dispose();
     super.dispose();
+  }
+
+  void navigateToDetail() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return ListDetails();
+    }));
   }
 }
