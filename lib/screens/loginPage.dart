@@ -1,0 +1,147 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:flutter/animation.dart';
+import 'package:flutter/material.dart';
+import 'package:uitask/helpers/AppearAnimation.dart';
+
+class LoginPage extends StatefulWidget {
+  String title;
+
+  LoginPage({String title}) {
+    this.title = title;
+  }
+
+  @override
+  State<StatefulWidget> createState() {
+    return _LoginState(title);
+  }
+}
+
+class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
+  String title;
+
+  AnimationController animationController;
+
+  @override
+  void initState() {
+    animationController = AnimationController(
+      vsync: this,
+      duration: Duration(
+        milliseconds: 200,
+      ),
+    )..addListener(() {
+        setState(() {});
+      });
+    super.initState();
+  }
+
+  _LoginState(String text) {
+    this.title = text;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Color backgroundColor = Theme.of(context).primaryColor;
+    TextStyle headings = Theme.of(context).primaryTextTheme.headline5;
+
+    TextStyle subheadings = Theme.of(context).primaryTextTheme.subtitle2;
+    TextStyle buttons = Theme.of(context).primaryTextTheme.headline6;
+
+    Color primaryColor = Theme.of(context).primaryColor;
+
+    int delayTime = 500;
+    // TODO: implement build
+    return new Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: Center(
+        child: Column(
+          children: <Widget>[
+            AppearAnimation(
+              child: CircleAvatar(
+                radius: 50,
+                child: FlutterLogo(
+                  size: 50,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 50.0,
+            ),
+            AppearAnimation(
+              child: Text("Welcome to UI Designs Test", style: headings),
+              delay: delayTime,
+            ),
+            SizedBox(
+              height: 50.0,
+            ),
+            AppearAnimation(
+              child: Container(
+                height: 50,
+                width: 250,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100.0),
+                    color: primaryColor),
+                child: Center(
+                  child: Text(
+                    'Proceed',
+                    style: buttons,
+                  ),
+                ),
+              ),
+              delay: delayTime + 400,
+            ),
+            SizedBox(
+              height: 30.0,
+            ),
+            AppearAnimation(
+              child: GestureDetector(
+                child: Text(
+                  "I DON'T WANT TO PROCEED",
+                  style: buttons,
+                ),
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                            title: Text('Exit'),
+                            content:
+                                Text('Do you want to exit the Application?'),
+                            actions: <Widget>[
+                              FlatButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: Text('No'),
+                              ),
+                              FlatButton(
+                                onPressed: () => exit(0),
+                                child: Text('Yes'),
+                              )
+                            ],
+                          ));
+                },
+              ),
+              delay: delayTime + 600,
+            ),
+            SizedBox(
+              height: 30.0,
+            ),
+            AppearAnimation(
+              child: Text("Designed By Swarup", style: subheadings),
+              delay: delayTime + 800,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+}
