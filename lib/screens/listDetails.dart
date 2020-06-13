@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'package:uitask/helpers/floatingactbutton.dart';
+import 'package:uitask/models/content.dart';
 
 class ListDetails extends StatefulWidget {
   @override
@@ -14,23 +15,12 @@ class ListDetails extends StatefulWidget {
 }
 
 class _ListState extends State<ListDetails> with TickerProviderStateMixin {
-  List<String> allItems;
   ScrollController scrollController;
   bool dialVisible = true;
-  List<String> archivedItems;
-  bool visibility = false;
-  var list = [];
 
-  @override
-  void initState() {
-    super.initState();
+  List<Content> listContent = [];
 
-    scrollController = ScrollController()
-      ..addListener(() {
-        setDialVisible(scrollController.position.userScrollDirection ==
-            ScrollDirection.forward);
-      });
-  }
+  List<Content> archivedContent = [];
 
   void setDialVisible(bool value) {
     setState(() {
@@ -51,7 +41,7 @@ class _ListState extends State<ListDetails> with TickerProviderStateMixin {
             constraints: BoxConstraints(
               maxHeight: 300.0,
             ),
-            child: getArchiveView(),
+            child: getArchiveListView(),
           ),
           Container(
             child: Text("This is second list"),
@@ -59,7 +49,7 @@ class _ListState extends State<ListDetails> with TickerProviderStateMixin {
             margin: EdgeInsets.only(top: 5.0),
           ),
           Expanded(
-            child: getSlideableView(),
+            child: getListFromClass(),
           )
         ],
       ),
@@ -67,25 +57,51 @@ class _ListState extends State<ListDetails> with TickerProviderStateMixin {
     );
   }
 
-  Widget getSlideableView() {
-    if (allItems == null) {
-      allItems = getListElements();
-    }
+  List<Content> getContentList(int numOfArray) {
+    List<Content> list = [];
 
+    for (int i = 0; i < numOfArray; i++) {
+      list.add(Content("Title $i", 'Subtitle', 'Description of Subtitle.'));
+    }
+    return list;
+  }
+
+  Widget getListFromClass() {
+    if (listContent == null || listContent.isEmpty) {
+      listContent = getContentList(15);
+    }
     return ListView.builder(
-        itemCount: allItems.length,
+        itemCount: listContent.length,
         itemBuilder: (context, index) {
           return Slidable(
             actionPane: SlidableDrawerActionPane(),
             actionExtentRatio: 0.25,
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.lightGreenAccent,
-                child: Text(allItems[index]),
-                foregroundColor: Colors.white,
-              ),
-              title: Text('List Title:' + allItems[index]),
-              subtitle: Text('Swipe Right to Archive'),
+            child: GestureDetector(
+              child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.lightGreenAccent,
+                    child: Icon(Icons.keyboard_arrow_right),
+                    foregroundColor: Colors.white,
+                  ),
+                  title: Text(listContent[index].title),
+                  subtitle: Visibility(
+                    visible: listContent[index].isSelected ? true : false,
+                      child: Row(
+                        children: <Widget>[
+                          Text(listContent[index].subtitle2, ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 20.0),
+                            child: Text(listContent[index].subtitle),
+                          )
+                        ],
+                      )
+                  )),
+              onTap: () {
+                setState(() {
+                  listContent[index].isSelected =
+                      !listContent[index].isSelected;
+                });
+              },
             ),
             actions: <Widget>[
               IconSlideAction(
@@ -93,7 +109,9 @@ class _ListState extends State<ListDetails> with TickerProviderStateMixin {
                 color: Colors.lime,
                 icon: Icons.archive,
                 onTap: () {
-                  updateList(allItems[index], context);
+                  setState(() {
+                    updateLists(index, context);
+                  });
                   print("Add to upper list $index");
                 },
               )
@@ -103,8 +121,25 @@ class _ListState extends State<ListDetails> with TickerProviderStateMixin {
         shrinkWrap: true);
   }
 
-  Widget getArchiveView() {
-    if (archivedItems == null || archivedItems.length == 0) {
+  void updateArchiveList(int index) {
+    listContent.add(archivedContent[index]);
+    archivedContent.remove(archivedContent[index]);
+  }
+
+  void updateLists(int index, BuildContext context) {
+    if (archivedContent == null || archivedContent.isEmpty) {
+      archivedContent = <Content>[listContent[index]];
+      listContent.remove(listContent[index]);
+    } else if (archivedContent.length >= 3) {
+      createSnackBar("Already three activities running.", context);
+    } else {
+      archivedContent.add(listContent[index]);
+      listContent.remove(listContent[index]);
+    }
+  }
+
+  Widget getArchiveListView() {
+    if (archivedContent == null || archivedContent.length == 0) {
       return Container(
         color: Colors.red,
         height: 20.0,
@@ -113,7 +148,7 @@ class _ListState extends State<ListDetails> with TickerProviderStateMixin {
       );
     } else {
       var listView = ListView.builder(
-          itemCount: archivedItems.length,
+          itemCount: archivedContent.length,
           itemBuilder: (context, index) {
             return Slidable(
               actionPane: SlidableDrawerActionPane(),
@@ -122,35 +157,28 @@ class _ListState extends State<ListDetails> with TickerProviderStateMixin {
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundColor: Colors.lightGreenAccent,
-                    child: Text(archivedItems[index]),
+                    child: Icon(Icons.keyboard_arrow_right),
                     foregroundColor: Colors.white,
                   ),
-                  title: Text('List Title: ' + archivedItems[index]),
+                  title: Text(archivedContent[index].title),
                   subtitle: Visibility(
-                      visible: visibility,
-                      child: Column(
+                      visible:
+                          (archivedContent[index].isSelected) ? true : false,
+                      child: Row(
                         children: <Widget>[
-                          Row(children: <Widget>[
-                            Text(
-                              'Swipe Left to Remove',
-                              textAlign: TextAlign.center,
-                            ),
-                          ]),
-                          Row(children: <Widget>[
-                            Text('Sub title 2'),
-                            Padding(
-                              padding: EdgeInsets.only(left: 50.0),
-                              child: Text(
-                                'Description 2',
-                                textAlign: TextAlign.center,
-                              ),
-                            )
-                          ]),
+                          Text(archivedContent[index].subtitle2, ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 20.0),
+                            child: Text(archivedContent[index].subtitle),
+                          )
                         ],
                       )),
                 ),
                 onTap: () {
-                  setVisibility();
+                  setState(() {
+                    archivedContent[index].isSelected =
+                        !archivedContent[index].isSelected;
+                  });
                 },
               ),
               secondaryActions: <Widget>[
@@ -159,7 +187,9 @@ class _ListState extends State<ListDetails> with TickerProviderStateMixin {
                   color: Colors.redAccent,
                   icon: Icons.remove_circle,
                   onTap: () {
-                    updateArchive(archivedItems[index]);
+                    setState(() {
+                      updateArchiveList(index);
+                    });
                     print("Remove from archive $index");
                   },
                 )
@@ -171,61 +201,10 @@ class _ListState extends State<ListDetails> with TickerProviderStateMixin {
     }
   }
 
-  void setVisibility() {
-    if (visibility == true) {
-      visibility = false;
-    } else if (visibility == false) {
-      visibility = true;
-    }
-    setState(() {});
-  }
-
   void createSnackBar(String message, BuildContext context) {
     final snackBar =
         new SnackBar(content: new Text(message), backgroundColor: Colors.red);
 
     Scaffold.of(context).showSnackBar(snackBar);
-  }
-
-  getListElements() {
-    var items = List<String>.generate(15, (counter) => "$counter");
-    return items;
-  }
-
-  void updateList(String index, BuildContext context) {
-    int x = int.parse(index);
-    if (archivedItems == null) {
-      archivedItems = [index];
-    } else if (archivedItems.length > 3) {
-      createSnackBar("Can not add more than four activities", context);
-    } else {
-      archivedItems.add(index);
-    }
-
-    allItems.remove(index);
-    allItems = sortList(allItems);
-    archivedItems = sortList(archivedItems);
-    setState(() {});
-  }
-
-  void updateArchive(String index) {
-    archivedItems.remove(index);
-    allItems.add(index);
-    allItems = sortList(allItems);
-    archivedItems = sortList(archivedItems);
-    setState(() {});
-  }
-
-  List<String> sortList(List<String> listItem) {
-    List<int> newlist = listItem.map(int.parse).toList();
-    newlist.sort();
-    List<String> orderedList = [];
-
-    for (int j = 0; j < newlist.length; j++) {
-      String x = newlist[j].toString();
-
-      orderedList.add(x);
-    }
-    return orderedList;
   }
 }

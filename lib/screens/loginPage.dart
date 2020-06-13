@@ -62,15 +62,24 @@ class _LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
         child: Column(
           children: <Widget>[
             Padding(
-                padding: EdgeInsets.only(top: 5.0),
-                child: AppearAnimation(
-                  child: CircleAvatar(
-                    radius: 50,
-                    child: FlutterLogo(
-                      size: 50,
+              padding: EdgeInsets.only(top: 5.0),
+              child: AppearAnimation(
+                delay: delayTime,
+                child: AvatarGlow(
+                  glowColor: Colors.lightGreen,
+                  duration: Duration(milliseconds: 2000),
+                  endRadius: 90.0,
+                  child: Material(
+                    elevation: 8.0,
+                    shape: CircleBorder(),
+                    child: CircleAvatar(
+                      radius: 50,
+                      child: FlutterLogo(
+                        size: 50,
+                      ),
                     ),
-                  ),
-                )),
+                  ))),
+            ),
             SizedBox(
               height: 50.0,
             ),
