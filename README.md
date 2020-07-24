@@ -1,6 +1,6 @@
-# uitask
+# Flutter UI
 
-A new Flutter application.
+A new Flutter application to showcase simple Flutter Animation and Design Pattern.
 
 ## Getting Started
 
